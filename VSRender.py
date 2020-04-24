@@ -32,6 +32,7 @@ from bpy.types import (Panel,
                        )
 
 import os
+import subprocess
 from bpy import context
 import codecs
 import shutil
@@ -153,11 +154,13 @@ def startrender(term):
 
     if term:
         for n in range(0, len(ranges)):
-            shstr = "gnome-terminal --title=Rendering_Section_" + ranges[n] + " --command=\"bash -c './" + ranges[n] + ".sh;'\""
-            print(os.getcwd())
             os.chdir(outpath)
             print(os.getcwd())
-            os.system(shstr)
+            # TODO: switch to which console the user has
+            subprocess.Popen(["konsole",
+                              # "--noclose",
+                              "--workdir", outpath,
+                              "-e", "./" + ranges[n] + ".sh"])
     else:
         for n in range(0, len(ranges)):
             cmd = outpath + ranges[n] + ".sh"
