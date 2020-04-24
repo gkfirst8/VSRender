@@ -32,6 +32,7 @@ from bpy.types import (Panel,
                        )
 
 import os
+import stat
 import subprocess
 from bpy import context
 import codecs
@@ -141,8 +142,7 @@ echo \"VSE Render : Part %&#3 Render Done\""
         temp = codecs.open(outpath + ranges[n] + ".sh", "w", "utf-8")
         temp.write(shstr)
         temp.close()
-
-
+        os.chmod(shellScript, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IROTH)
 
 def startrender(term):
     global ranges
