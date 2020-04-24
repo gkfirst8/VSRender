@@ -133,7 +133,7 @@ def splitparts(nparts, tool):
 
     shscript = "#!/bin/bash\n\
 echo \"" + blendexe + "\"\n\
-x=\"" + blendfilepath + " -x 1 -s %&#1 -e %&#2 -a\"\n\
+x=\"" + blendfilepath + " -t 0 -o " + outpath + "/ -x 1 -s %&#1 -e %&#2 -a\"\n\
 echo $x\n\
 eval \"" + blendexe + "\" -b \"$x\"\n\
 echo \"VSE Render : Part %&#3 Render Done\""
@@ -145,8 +145,10 @@ echo \"VSE Render : Part %&#3 Render Done\""
         shstr = shscript.replace("%&#1", str(sframes[n]))
         shstr = shstr.replace("%&#2", str(eframes[n]))
         shstr = shstr.replace("%&#3", str(n + 1))
-        
-        temp = codecs.open(outpath + ranges[n] + ".sh", "w", "utf-8")
+
+        shellScript = os.path.join(outpath, ranges[n] + ".sh")
+        print("Writing script " + str(n) + ": " + shellScript)
+        temp = codecs.open(shellScript, "w", "utf-8")
         temp.write(shstr)
         temp.close()
         os.chmod(shellScript, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR | stat.S_IRGRP | stat.S_IROTH)
@@ -192,8 +194,9 @@ def concat(tool):
     liststr = ""
     for n in range(0, len(ranges)):
         liststr += "file "  + '{0:04d}'.format(sframes[n]) + "-" + '{0:04d}'.format(eframes[n]) + "." + ext + "\n"
-    
-    temp = codecs.open(outpath + "list.txt", "w", "utf-8")
+    listFile = os.path.join(outpath, "list.txt")
+    print("List file: " + listFile)
+    temp = codecs.open(listFile, "w", "utf-8")
     temp.write(liststr)
     temp.close()
 
@@ -203,9 +206,10 @@ def concat(tool):
     os.chdir(outpath)
     printconsole(os.getcwd())
 
-    jname = tool.vsr_outfilename
+    jname = os.path.join(outpath, tool.vsr_outfilename)
     cmd = tool.vsr_ffmpegcmd
     cmd = cmd.replace("joinedoutput", jname)
+    cmd = cmd.replace("list.txt", listFile)
     printconsole(cmd)
 
     res = os.system(cmd)
