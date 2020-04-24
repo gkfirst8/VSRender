@@ -40,7 +40,7 @@ import platform
 #globals
 ranges = []
 sframes = []
-eframes = []   
+eframes = []
 issplit = False
 
 def ShowMessageBox(message = "", title = "VS Render Says...", icon = 'INFO'):
@@ -54,14 +54,14 @@ def ShowMessageBox(message = "", title = "VS Render Says...", icon = 'INFO'):
 def printconsole(data, tag = "VS: "):
     if tag != "VS: ":
         tag = "VS: " + tag + ": "
-        
+
     for window in bpy.context.window_manager.windows:
         screen = window.screen
         for area in screen.areas:
             #print(area.type)
             if area.type == 'CONSOLE':
                 override = {'window': window, 'screen': screen, 'area': area}
-                bpy.ops.console.scrollback_append(override, text=tag+str(data), type="OUTPUT") 
+                bpy.ops.console.scrollback_append(override, text=tag+str(data), type="OUTPUT")
 
 def pc(data, tag = "VS: "):
    printconsole(data, tag)
@@ -72,15 +72,15 @@ def splitparts(nparts, tool):
     fend = bpy.context.scene.frame_end
     nframes = fend - fstart + 1
     printconsole(nframes, "nframes")
-    
+
     partlen = int(nframes/nparts)
     rem = nframes%nparts
     printconsole(partlen, "plen")
     printconsole(partlen+rem, "lastpart")
-    
+
     tool.vsr_partframes = partlen
     tool.vsr_partframeslast = partlen + rem
-        
+
     global ranges
     global sframes
     global eframes
@@ -93,35 +93,35 @@ def splitparts(nparts, tool):
         
     for p in range(1, nparts):
         fendpart = fstartpart + partlen -1
-        
+
         rangestr = str(fstartpart) + "-" + str(fendpart)
         printconsole(rangestr)
         ranges.append(rangestr)
         sframes.append(fstartpart)
         eframes.append(fendpart)
-        
+
         fstartpart = fendpart + 1
-    
-    
+
+
     fendpart = fstartpart + partlen + rem - 1
     rangestr = str(fstartpart) + "-" + str(fendpart)
     printconsole(rangestr)
     ranges.append(rangestr)
     sframes.append(fstartpart)
     eframes.append(fendpart)
-    
-    printconsole(ranges, "Ranges") 
-    
+
+    printconsole(ranges, "Ranges")
+
     #save sh scripts
     #blendfilename = bpy.path.basename(bpy.context.blend_data.filepath)
     blendfilepath = bpy.context.blend_data.filepath
-    
+
     blendexe = bpy.app.binary_path
     blendexe = blendexe.replace(" ", "\ ")
     blendfilepath = blendfilepath.replace(" ", "\ ")
-    
+
     outpath =   bpy.context.scene.render.filepath
-    
+
     shscript = "#!/bin/bash\n\
 echo \"" + blendexe + "\"\n\
 x=\"" + blendfilepath + " -x 1 -s %&#1 -e %&#2 -a\"\n\
@@ -129,10 +129,10 @@ echo $x\n\
 eval \"" + blendexe + "\" -b \"$x\"\n\
 echo \"VSE Render : Part %&#3 Render Done\""
 
-    
+
     printconsole(outpath, "Saving sh scripts")
-    
-    for n in range(0, len(sframes)):    
+
+    for n in range(0, len(sframes)):
         shstr = shscript.replace("%&#1", str(sframes[n]))
         shstr = shstr.replace("%&#2", str(eframes[n]))
         shstr = shstr.replace("%&#3", str(n + 1))
@@ -147,7 +147,7 @@ def startrender(term):
     global ranges
     global sframes
     global eframes
-    
+
     pc(len(ranges), "Start render ranges")
     outpath =  bpy.context.scene.render.filepath
 
@@ -171,14 +171,14 @@ def concat(tool):
     tool.vsr_res = "Concat in progress..."
     ext = tool.vsr_ffmpegext
     ext = ext.replace(".", "")
-    
+
     outpath = bpy.context.scene.render.filepath
     printconsole(outpath)
-    
+
     global ranges
     global sframes
     global eframes
-    
+
     liststr = ""
     for n in range(0, len(ranges)):
         liststr += "file "  + '{0:04d}'.format(sframes[n]) + "-" + '{0:04d}'.format(eframes[n]) + "." + ext + "\n"
@@ -186,7 +186,7 @@ def concat(tool):
     temp = codecs.open(outpath + "list.txt", "w", "utf-8")
     temp.write(liststr)
     temp.close()
-    
+
     pc(liststr)
 
     printconsole(os.getcwd())
@@ -229,7 +229,7 @@ class CRP_OT_CRenderParts(bpy.types.Operator):
             startrender(vsrtool.vsr_term)
         else:
             ShowMessageBox("Please Split into parts before rendering!")
-        
+
         return{'FINISHED'}
 
 
@@ -243,11 +243,11 @@ class CSP_OT_CSplitParts(bpy.types.Operator):
         scene = context.scene
         vsrtool = scene.vsr_tool
         vsrtool.vsr_res = " "
-        
+
         #os check
         if platform.system() != 'Linux':
             ShowMessageBox("This addon may not run properly on your OS! Supported OS: Linux")
-        
+
         global ranges
         global sframes
         global eframes
@@ -258,9 +258,9 @@ class CSP_OT_CSplitParts(bpy.types.Operator):
         pc(ranges, "VSR Ranges")
         pc(sframes, "VSR SFrames")
         pc(eframes, "VSR EFrames")
-        
+
         issplit = True
-        
+
         return{'FINISHED'}
 
 
@@ -273,9 +273,9 @@ class CCC_OT_CConCat(bpy.types.Operator):
         scene = context.scene
         vsrtool = scene.vsr_tool
         concat(vsrtool)
-        
-        return{'FINISHED'}  
-    
+
+        return{'FINISHED'}
+
 class OBJECT_PT_VSPanel(bpy.types.Panel):
 
     bl_label = "VS Render 0.2.1"
@@ -286,12 +286,12 @@ class OBJECT_PT_VSPanel(bpy.types.Panel):
     bl_context = "objectmode"
 
 
-    
+
     def draw(self, context):
         layout = self.layout
         scene = context.scene
         vsrtool = scene.vsr_tool
-        
+
         layout.prop(vsrtool, "vsr_parts")
         layout.operator("split.parts", text = "Split", icon='TRIA_RIGHT')
         layout.label(text = "Part Frame Count : " + str(vsrtool.vsr_partframes))
@@ -304,20 +304,20 @@ class OBJECT_PT_VSPanel(bpy.types.Panel):
         layout.prop(vsrtool, "vsr_ffmpegcmd")
         layout.prop(vsrtool, "vsr_ffmpegext")
         layout.operator("con.cat", text = "Join Parts", icon='ADD')
-        layout.label(text = vsrtool.vsr_res)        
+        layout.label(text = vsrtool.vsr_res)
         row = layout.row(align=True)
         row.operator("wm.url_open", text="Help | Source | Updates", icon='QUESTION').url = "https://github.com/oormicreations/VSRender"
 
 
 
 class CCProperties(PropertyGroup):
-    
+
     vsr_outfilename: StringProperty(
         name = "Out File Name",
         description = "Name of the joined movie",
         default = "joinedoutput"
       )
-      
+
     vsr_ffmpegcmd: StringProperty(
         name = "Cmd",
         description = "Ffmpeg Command",
@@ -335,21 +335,21 @@ class CCProperties(PropertyGroup):
         description = "Number of parts to split into. (= Number of parallel renders)",
         default = 8,
         min=1,
-        max=256        
-      )   
-    
+        max=256
+      )
+
     vsr_partframes: IntProperty(
         name = "Part Frames",
         description = "Number of part frames",
         default = 0
       )
-      
+
     vsr_partframeslast: IntProperty(
         name = "Part Frames Last",
         description = "Number of last part frames",
         default = 0
       )
-    
+
     vsr_term: BoolProperty(
         name = "Open Terminal",
         description = "Open terminal windows while rendering",
@@ -364,7 +364,7 @@ class CCProperties(PropertyGroup):
 
 
 
-    
+
 # ------------------------------------------------------------------------
 #    Registration
 # ------------------------------------------------------------------------
