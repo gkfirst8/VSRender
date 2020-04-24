@@ -335,13 +335,13 @@ class CCProperties(PropertyGroup):
     vsr_ffmpegcmd: StringProperty(
         name = "Cmd",
         description = "Ffmpeg Command",
-        default = "ffmpeg -f concat -safe 0 -i list.txt -c copy -y joinedoutput.mp4"
+        default = "~/bin/ffmpeg -f concat -safe 0 -i list.txt -c copy -y joinedoutput.mp4"
       )
 
     vsr_ffmpegext: StringProperty(
         name = "Ext",
         description = "Part File Extension",
-        default = "mkv"
+        default = "mp4"
       )
 
     vsr_parts: IntProperty(
