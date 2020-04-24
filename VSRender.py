@@ -6,7 +6,7 @@ bl_info = {
     "name": "VS Render",
     "description": "VS Parallel Render by Oormi Creations",
     "author": "Oormi Creations",
-    "version": (0, 1, 1),
+    "version": (0, 2, 1),
     "blender": (2, 80, 0),
     "location": "Video Sequencer > VS Render",
     "warning": "", # used for warning icon and text in addons panel
@@ -278,7 +278,7 @@ class CCC_OT_CConCat(bpy.types.Operator):
     
 class OBJECT_PT_VSPanel(bpy.types.Panel):
 
-    bl_label = "VS Render 0.1.1"
+    bl_label = "VS Render 0.2.1"
     bl_idname = "OBJECT_PT_VS_Panel2"
     bl_category = "VS Render"
     bl_space_type = 'SEQUENCE_EDITOR'
