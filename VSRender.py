@@ -45,6 +45,10 @@ sframes = []
 eframes = []
 issplit = False
 
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
 def ShowMessageBox(message = "", title = "VS Render Says...", icon = 'INFO'):
 
     def draw(self, context):
@@ -92,7 +96,7 @@ def splitparts(nparts, tool):
 
     nextstart = 0
     fstartpart = fstart
-        
+
     for p in range(1, nparts):
         fendpart = fstartpart + partlen -1
 
@@ -122,7 +126,10 @@ def splitparts(nparts, tool):
     blendexe = blendexe.replace(" ", "\ ")
     blendfilepath = blendfilepath.replace(" ", "\ ")
 
-    outpath =   bpy.context.scene.render.filepath
+    outpath = bpy.context.scene.render.filepath
+    if not os.path.isdir(outpath):
+        ShowMessageBox("Ouput path is not an existing directory: " + outpath)
+        raise Error
 
     shscript = "#!/bin/bash\n\
 echo \"" + blendexe + "\"\n\
