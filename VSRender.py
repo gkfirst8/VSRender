@@ -127,6 +127,7 @@ def splitparts(nparts, tool):
     blendfilepath = blendfilepath.replace(" ", "\ ")
 
     outpath = bpy.context.scene.render.filepath
+    # TODO: support Blender relative path like "//output/"
     if not os.path.isdir(outpath):
         ShowMessageBox("Ouput path is not an existing directory: " + outpath)
         raise Error
@@ -137,7 +138,6 @@ x=\"" + blendfilepath + " -t 1 -o " + outpath + "/ -x 1 -s %&#1 -e %&#2 -a\"\n\
 echo $x\n\
 eval \"" + blendexe + "\" -b \"$x\"\n\
 echo \"VSE Render : Part %&#3 Render Done\""
-
 
     printconsole(outpath, "Saving sh scripts")
 
