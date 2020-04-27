@@ -133,7 +133,7 @@ def splitparts(nparts, tool):
 
     shscript = "#!/bin/bash\n\
 echo \"" + blendexe + "\"\n\
-x=\"" + blendfilepath + " -t 0 -o " + outpath + "/ -x 1 -s %&#1 -e %&#2 -a\"\n\
+x=\"" + blendfilepath + " -t 1 -o " + outpath + "/ -x 1 -s %&#1 -e %&#2 -a\"\n\
 echo $x\n\
 eval \"" + blendexe + "\" -b \"$x\"\n\
 echo \"VSE Render : Part %&#3 Render Done\""
